@@ -1,0 +1,39 @@
+---
+import Layout from "~/layouts/Layout.astro"
+import Header from "~/components/Header.astro"
+import Main from "~/components/Main"
+import "~/styles/global.css"
+import "@unocss/reset/tailwind.css"
+import "katex/dist/katex.min.css"
+import "highlight.js/styles/atom-one-dark.css"
+import { parsePrompts } from "~/utils/parse"
+import { setting, message, resetContinuousDialogue } from "~/system"
+const prompts = parsePrompts()
+const defaultMessage = import.meta.env.DEFAULT_MESSAGE || message
+let defaultSetting
+try {
+  defaultSetting = JSON.parse(import.meta.env.DEFAULT_SETTING)
+} catch {
+  defaultSetting = setting
+}
+
+const _reset = import.meta.env.RESET_CONTINUOUS_DIALOGUE_OPTION
+---
+
+<Layout title="ChatGPT">
+  <main class="before">
+    <Header />
+    <Main
+      env={{
+        defaultSetting,
+        defaultMessage,
+        resetContinuousDialogue:
+          _reset && _reset !== String(resetContinuousDialogue)
+            ? !resetContinuousDialogue
+            : resetContinuousDialogue
+      }}
+      prompts={prompts}
+      client:visible
+    />
+  </main>
+</Layout>
